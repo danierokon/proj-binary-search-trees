@@ -7,6 +7,10 @@ class Node
     @left = left
     @right = right
   end
+
+  def to_s
+    "node value = #{@data}, left child = #{@left == nil ? "no child found" : @left.data}, right child = #{@right == nil ? "no child found": @right.data}"
+  end
 end
 
 class Tree
@@ -75,6 +79,23 @@ class Tree
     end
     node
   end
+
+  def find(value)
+    find_rec(@root, value)
+  end
+
+  def find_rec(node = @root, value)
+    return "No data of value #{value} found" if node == nil
+    return node if node.data == value
+
+    if value < node.data
+      node = find_rec(node.left, value)
+    elsif value > node.data
+      node = find_rec(node.right, value)
+    end
+
+    node
+  end
 end
 
 # test
@@ -85,7 +106,9 @@ tree.insert(6444)
 # tree.pretty_print
 tree.insert(300)
 # tree.pretty_print
-tree.delete(4)
+# tree.delete(4)
+# tree.pretty_print
+# tree.delete(8)
 tree.pretty_print
-tree.delete(8)
-tree.pretty_print
+puts tree.find(17)
+puts tree.find(6345)
