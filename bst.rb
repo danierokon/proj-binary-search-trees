@@ -102,12 +102,45 @@ class Tree
     result = []
     until queue.empty?
       curr = queue.shift
-      yield(curr) if block_given?
+      yield(curr.data) if block_given?
       result << curr.data
       queue << curr.left unless curr.left.nil?
       queue << curr.right unless curr.right.nil?
     end
     return result unless block_given?
+  end
+
+  def inorder(node = @root, array = [], &block)
+    # L O R
+    return if node == nil
+
+    inorder(node.left, array, &block)
+    block_given? ? yield(node.data) : array << node.data
+    inorder(node.right, array, &block)
+
+    array unless block_given?
+  end
+
+  def preorder(node = @root, array = [], &block)
+    # O L R
+    return if node == nil
+
+    block_given? ? yield(node.data) : array << node.data
+    preorder(node.left, array, &block)
+    preorder(node.right, array, &block)
+
+    array unless block_given?
+  end
+
+  def postorder(node = @root, array = [], &block)
+    # O L R
+    return if node == nil
+
+    postorder(node.left, array, &block)
+    postorder(node.right, array, &block)
+    block_given? ? yield(node.data) : array << node.data
+
+    array unless block_given?
   end
 end
 
@@ -123,7 +156,11 @@ tree.insert(300)
 # tree.pretty_print
 # tree.delete(8)
 tree.pretty_print
-puts tree.find(17)
-puts tree.find(6345)
-p tree.level_order
-tree.level_order{|data| puts data}
+# puts tree.find(17)
+# puts tree.find(6345)
+# p tree.level_order
+# tree.level_order{|data| puts data}
+p tree.inorder
+# tree.inorder{|data| puts data}
+p tree.preorder
+p tree.postorder
