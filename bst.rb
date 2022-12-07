@@ -96,9 +96,22 @@ class Tree
 
     node
   end
+
+  def level_order
+    queue = [@root]
+    result = []
+    until queue.empty?
+      curr = queue.shift
+      yield(curr) if block_given?
+      result << curr.data
+      queue << curr.left unless curr.left.nil?
+      queue << curr.right unless curr.right.nil?
+    end
+    return result unless block_given?
+  end
 end
 
-# test
+# test code
 arr = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]
 tree = Tree.new(arr)
 # tree.pretty_print
@@ -112,3 +125,5 @@ tree.insert(300)
 tree.pretty_print
 puts tree.find(17)
 puts tree.find(6345)
+p tree.level_order
+tree.level_order{|data| puts data}
