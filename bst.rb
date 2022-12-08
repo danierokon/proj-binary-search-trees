@@ -14,7 +14,7 @@ class Node
 end
 
 class Tree
-  attr_accessor :root
+  attr_accessor :root, :sorted
 
   def initialize(array)
     @sorted = array.sort.uniq
@@ -85,7 +85,7 @@ class Tree
   end
 
   def find_rec(node = @root, value)
-    return "No data of value #{value} found" if node == nil
+    return nil if node == nil
     return node if node.data == value
 
     if value < node.data
@@ -142,25 +142,60 @@ class Tree
 
     array unless block_given?
   end
+
+  # start at target node, find longest path downward, return max height
+  def height(value, node = find(value))
+    return -1 if node.nil?
+
+    left_height = height(value, node.left)
+    right_height = height(value, node.right)
+    height = [left_height, right_height].max + 1
+    return height
+  end
+
+# start at root, stop at target, +1 depth (from 0) for every recur called
+  def depth(value, curr = @root)
+    return nil unless find(value)
+    return 0 if curr.data == value
+
+    target = depth(value, curr.left) if value < curr.data
+    target = depth(value, curr.right) if value > curr.data
+    depth = target + 1
+    return depth
+  end
+
+  def balanced?
+    balance = false
+    left_height = height(@root.left.data, @root.left)
+    right_height = height(@root.right.data, @root.right)
+    balance = true if (left_height - right_height).abs <= 1
+    balance
+  end
+
+  def rebalance
+    array = self.inorder
+    self.sorted = array.sort.uniq
+    self.root = build_tree(array)
+  end
+
 end
 
 # test code
-arr = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]
-tree = Tree.new(arr)
-# tree.pretty_print
-tree.insert(6444)
-# tree.pretty_print
-tree.insert(300)
-# tree.pretty_print
-# tree.delete(4)
-# tree.pretty_print
-# tree.delete(8)
-tree.pretty_print
-# puts tree.find(17)
-# puts tree.find(6345)
-# p tree.level_order
-# tree.level_order{|data| puts data}
-p tree.inorder
-# tree.inorder{|data| puts data}
-p tree.preorder
-p tree.postorder
+# arr = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]
+# tree = Tree.new(arr)
+array = Array.new(15){rand(1..100)}
+a_tree = Tree.new(array)
+p a_tree.balanced?
+p a_tree.level_order
+p a_tree.preorder
+p a_tree.postorder
+p a_tree.inorder
+6.times {a_tree.insert(rand(101..200))}
+p a_tree.balanced?
+# a_tree.pretty_print
+a_tree.rebalance
+p a_tree.balanced?
+p a_tree.level_order
+p a_tree.preorder
+p a_tree.postorder
+p a_tree.inorder
